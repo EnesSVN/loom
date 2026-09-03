@@ -17,3 +17,11 @@ test("h's children are ('a', null, undefined, false, 0, '', 'b') normalized corr
   assert.equal(vnode.children[2].value, "");
   assert.equal(vnode.children[3].value, "b");
 });
+
+test("h flattens nested children arrays correctly", () => {
+  const vnode = h("div", {}, ["a", ["b", ["c"]]]);
+  assert.equal(vnode.children.length, 3);
+  assert.equal(vnode.children[0].value, "a");
+  assert.equal(vnode.children[1].value, "b");
+  assert.equal(vnode.children[2].value, "c");
+});

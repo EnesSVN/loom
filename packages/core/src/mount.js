@@ -1,4 +1,4 @@
-import { TEXT } from "./vnode.js";
+import { TEXT, FRAGMENT } from "./vnode.js";
 
 const PROPS = ["checked", "value", "selected", "disabled"];
 
@@ -7,6 +7,14 @@ export const mount = (vnode, container, doc = globalThis.document) => {
     const textNode = doc.createTextNode(vnode.value);
     container.appendChild(textNode);
     return textNode;
+  }
+  if (vnode.type === FRAGMENT) {
+    const frag = doc.createDocumentFragment();
+    for (const child of vnode.children) {
+      mount(child, frag, doc);
+    }
+    container.appendChild(frag);
+    return frag;
   }
   const el = doc.createElement(vnode.type);
   for (const [key, value] of Object.entries(vnode.props)) {

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mount, createText, h } from "@loom/core";
+import { mount, createText, h, FRAGMENT } from "@loom/core";
 
 function createFakeNode(tag) {
   return {
@@ -10,6 +10,11 @@ function createFakeNode(tag) {
     style: {},
     listeners: {},
     appendChild(node) {
+      if (node.nodeType === "fragment") {
+        this.childNodes.push(...node.childNodes);
+        node.childNodes = [];
+        return node;
+      }
       this.childNodes.push(node);
       return node;
     },
@@ -30,6 +35,11 @@ function createFakeDocument() {
     },
     createElement(tag) {
       return createFakeNode(tag);
+    },
+    createDocumentFragment() {
+      const frag = createFakeNode();
+      frag.nodeType = "fragment";
+      return frag;
     },
   };
 }
@@ -104,4 +114,15 @@ test("mount, style prop'unu uygular", () => {
   assert.equal(div.style.color, "red");
   assert.equal(div.style.backgroundColor, "blue");
   assert.equal(div.attributes.style, undefined);
+});
+
+test("mount, fragment'in cocuklarini container'a tasir", () => {
+  const doc = createFakeDocument();
+  const container = createFakeNode();
+
+  mount(h(FRAGMENT, {}, ["bir", "iki"]), container, doc);
+
+  assert.equal(container.childNodes.length, 2);
+  assert.equal(container.childNodes[0].value, "bir");
+  assert.equal(container.childNodes[1].value, "iki");
 });
