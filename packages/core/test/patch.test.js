@@ -36,3 +36,47 @@ test("patch, tur degisince eski node'u yenisiyle degistirir", () => {
   assert.notEqual(container.childNodes[0], eskiDom);
   assert.equal(yeni.el, container.childNodes[0]);
 });
+
+test("patch, degisen attribute'u gunceller", () => {
+  const doc = createFakeDocument();
+  const container = createFakeNode();
+
+  const eski = h("div", { id: "a" });
+  mount(eski, container, doc);
+  const domNode = container.childNodes[0];
+
+  const yeni = h("div", { id: "b" });
+  patch(eski, yeni, doc);
+
+  assert.equal(domNode.attributes.id, "b");
+  assert.equal(container.childNodes[0], domNode);
+});
+
+test("patch, degisen attribute'u gunceller", () => {
+  const doc = createFakeDocument();
+  const container = createFakeNode();
+
+  const eski = h("div", { id: "a" });
+  mount(eski, container, doc);
+  const domNode = container.childNodes[0];
+
+  const yeni = h("div", { id: "b" });
+  patch(eski, yeni, doc);
+
+  assert.equal(domNode.attributes.id, "b");
+  assert.equal(container.childNodes[0], domNode);
+});
+
+test("patch, silinen attribute'u DOM'dan kaldirir", () => {
+  const doc = createFakeDocument();
+  const container = createFakeNode();
+
+  const eski = h("div", { id: "a" });
+  mount(eski, container, doc);
+  const domNode = container.childNodes[0];
+
+  const yeni = h("div", {});
+  patch(eski, yeni, doc);
+
+  assert.equal(domNode.attributes.id, undefined);
+});

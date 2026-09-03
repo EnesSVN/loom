@@ -28,6 +28,9 @@ export function createFakeNode(tag) {
     setAttribute(name, value) {
       this.attributes[name] = value;
     },
+    removeAttribute(name) {
+      delete this.attributes[name];
+    },
     addEventListener(type, handler) {
       this.listeners[type] ??= [];
       this.listeners[type].push(handler);
