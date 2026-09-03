@@ -3,28 +3,28 @@ import assert from "node:assert/strict";
 import { mount, createText, h, FRAGMENT } from "@loom/core";
 import { createFakeNode, createFakeDocument } from "../test-utils/fake-dom.js";
 
-test("mount, metin dugumunu container'a ekler", () => {
+test("mount appends a text node to the container", () => {
   const doc = createFakeDocument();
   const container = createFakeNode();
 
-  mount(createText("merhaba"), container, doc);
+  mount(createText("hello"), container, doc);
 
   assert.equal(container.childNodes.length, 1);
-  assert.equal(container.childNodes[0].nodeValue, "merhaba");
+  assert.equal(container.childNodes[0].nodeValue, "hello");
 });
 
-test("mount, element'i ve icindeki metni ekler", () => {
+test("mount appends an element and its text child", () => {
   const doc = createFakeDocument();
   const container = createFakeNode();
 
-  mount(h("div", {}, ["merhaba"]), container, doc);
+  mount(h("div", {}, ["hello"]), container, doc);
 
   const div = container.childNodes[0];
   assert.equal(div.tagName, "div");
-  assert.equal(div.childNodes[0].nodeValue, "merhaba");
+  assert.equal(div.childNodes[0].nodeValue, "hello");
 });
 
-test("mount, siradan prop'u attribute olarak yazar", () => {
+test("mount writes a plain prop as an attribute", () => {
   const doc = createFakeDocument();
   const container = createFakeNode();
 
@@ -34,7 +34,7 @@ test("mount, siradan prop'u attribute olarak yazar", () => {
   assert.equal(div.attributes.id, "a");
 });
 
-test("mount, event listener ekler", () => {
+test("mount binds an on* prop as an event listener", () => {
   const doc = createFakeDocument();
   const container = createFakeNode();
 
@@ -46,7 +46,7 @@ test("mount, event listener ekler", () => {
   assert.equal(div.attributes.onClick, undefined);
 });
 
-test("mount, siradan prop'u DOM property olarak yazar", () => {
+test("mount writes known props as DOM properties, not attributes", () => {
   const doc = createFakeDocument();
   const container = createFakeNode();
 
@@ -59,7 +59,7 @@ test("mount, siradan prop'u DOM property olarak yazar", () => {
   assert.equal(input.attributes.checked, undefined);
 });
 
-test("mount, style prop'unu uygular", () => {
+test("mount applies a style object field by field", () => {
   const doc = createFakeDocument();
   const container = createFakeNode();
 
@@ -75,18 +75,18 @@ test("mount, style prop'unu uygular", () => {
   assert.equal(div.attributes.style, undefined);
 });
 
-test("mount, fragment'in cocuklarini container'a tasir", () => {
+test("mount moves fragment children into the container", () => {
   const doc = createFakeDocument();
   const container = createFakeNode();
 
-  mount(h(FRAGMENT, {}, ["bir", "iki"]), container, doc);
+  mount(h(FRAGMENT, {}, ["one", "two"]), container, doc);
 
   assert.equal(container.childNodes.length, 2);
-  assert.equal(container.childNodes[0].nodeValue, "bir");
-  assert.equal(container.childNodes[1].nodeValue, "iki");
+  assert.equal(container.childNodes[0].nodeValue, "one");
+  assert.equal(container.childNodes[1].nodeValue, "two");
 });
 
-test("mount, uretilen DOM node'unu vnode.el'e yazar", () => {
+test("mount stores the created DOM node on vnode.el", () => {
   const doc = createFakeDocument();
   const container = createFakeNode();
 
@@ -94,4 +94,13 @@ test("mount, uretilen DOM node'unu vnode.el'e yazar", () => {
   mount(vnode, container, doc);
 
   assert.equal(vnode.el, container.childNodes[0]);
+});
+
+test("mount does not write key as an attribute", () => {
+  const doc = createFakeDocument();
+  const container = createFakeNode();
+
+  mount(h("li", { key: 1 }, ["a"]), container, doc);
+
+  assert.equal(container.childNodes[0].attributes.key, undefined);
 });

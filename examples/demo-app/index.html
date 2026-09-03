@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>loom demo — Faz 1</title>
+    <title>loom demo</title>
     <script type="importmap">
       {
         "imports": {
@@ -15,15 +15,15 @@
     <script type="module">
       import { h, mount, FRAGMENT } from "@loom/core";
 
-      const gorevler = [
-        "VNode veri yapisi",
-        "h() ve children normalizasyonu",
-        "mount() ile DOM uretimi",
-        "props ayrimi: attribute / property / event",
-        "fragment ve ic ice children",
+      const tasks = [
+        "VNode data structure",
+        "h() and children normalization",
+        "mount() creates real DOM",
+        "props: attribute / property / event",
+        "fragments and nested children",
       ];
 
-      let sayac = 0;
+      let clicks = 0;
 
       const app = h(
         "div",
@@ -38,41 +38,40 @@
         },
         [
           h("h1", { style: { fontSize: "22px", marginBottom: "4px" } }, [
-            "loom — Faz 1",
+            "loom — phase 1",
           ]),
 
-          h("p", { style: { color: "#666" } }, ["Tamamlanan gun: ", 5, " / 7"]),
+          h("p", { style: { color: "#666" } }, ["Days completed: ", 5, " / 7"]),
 
           h(FRAGMENT, {}, [
-            h("h2", { style: { fontSize: "16px" } }, ["Yapilanlar"]),
-            h("ul", {}, [gorevler.map((g) => h("li", {}, [g]))]),
+            h("h2", { style: { fontSize: "16px" } }, ["Done"]),
+            h("ul", {}, [tasks.map((task) => h("li", {}, [task]))]),
           ]),
 
           h(
             "button",
             {
-              id: "sayac",
+              id: "counter",
               style: { padding: "8px 14px", cursor: "pointer" },
               onClick: (event) => {
-                sayac += 1;
-
-                event.target.textContent = `Tiklandi: ${sayac}`;
+                clicks += 1;
+                event.target.textContent = `Clicked: ${clicks}`;
               },
             },
-            ["Tiklandi: 0"],
+            ["Clicked: 0"],
           ),
 
           h("p", {}, [
             h("input", { type: "checkbox", checked: true }),
-            " checked bir property, attribute degil",
+            " checked is a property, not an attribute",
           ]),
 
           h("p", { style: { color: "#666", fontSize: "13px" } }, [
-            "falsy eleme: ",
+            "falsy filtering: ",
             null,
             false,
             undefined,
-            "bu satirda sadece bu metin var",
+            "only this text is rendered",
           ]),
         ],
       );

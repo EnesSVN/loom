@@ -2,7 +2,7 @@ import { createText, createElement } from "./vnode.js";
 
 export const h = (type, props = {}, children = []) => {
   children = children.flat(Infinity);
-
+  const { key, ...otherProps } = props;
   children = children.filter(
     (child) => child !== null && child !== undefined && child !== false,
   );
@@ -12,5 +12,5 @@ export const h = (type, props = {}, children = []) => {
       ? createText(child)
       : child,
   );
-  return createElement(type, props, normalized);
+  return createElement(type, otherProps, normalized, key);
 };
