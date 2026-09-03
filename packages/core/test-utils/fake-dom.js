@@ -17,6 +17,13 @@ export function createFakeNode(tag) {
       this.childNodes.push(node);
       return node;
     },
+    removeChild(node) {
+      const i = this.childNodes.indexOf(node);
+      if (i === -1) throw new Error("removeChild: node bulunamadi");
+      this.childNodes.splice(i, 1);
+      node.parentNode = null;
+      return node;
+    },
     replaceChild(yeni, eski) {
       const i = this.childNodes.indexOf(eski);
       if (i === -1) throw new Error("replaceChild: eski node bulunamadi");

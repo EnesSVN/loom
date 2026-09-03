@@ -97,3 +97,33 @@ test("patch, cocuklari ayni pozisyonda karsilastirir", () => {
   assert.equal(divDom.childNodes.length, 1);
   assert.equal(divDom.childNodes[0], textDom);
 });
+
+test("patch, yeni cocuklari ekler", () => {
+  const doc = createFakeDocument();
+  const container = createFakeNode();
+
+  const eski = h("ul", {}, ["a"]);
+  mount(eski, container, doc);
+  const ulDom = container.childNodes[0];
+
+  const yeni = h("ul", {}, ["a", "b"]);
+  patch(eski, yeni, doc);
+
+  assert.equal(ulDom.childNodes.length, 2);
+  assert.equal(ulDom.childNodes[1].nodeValue, "b");
+});
+
+test("patch, fazla cocuklari siler", () => {
+  const doc = createFakeDocument();
+  const container = createFakeNode();
+
+  const eski = h("ul", {}, ["a", "b"]);
+  mount(eski, container, doc);
+  const ulDom = container.childNodes[0];
+
+  const yeni = h("ul", {}, ["a"]);
+  patch(eski, yeni, doc);
+
+  assert.equal(ulDom.childNodes.length, 1);
+  assert.equal(ulDom.childNodes[0].nodeValue, "a");
+});

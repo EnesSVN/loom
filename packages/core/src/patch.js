@@ -1,5 +1,5 @@
 import { TEXT } from "./vnode.js";
-import { createDom, setProp } from "./mount.js";
+import { createDom, setProp, mount } from "./mount.js";
 
 export const patch = (prevVNode, nextVNode, doc = globalThis.document) => {
   if (prevVNode.type !== nextVNode.type) {
@@ -12,7 +12,9 @@ export const patch = (prevVNode, nextVNode, doc = globalThis.document) => {
 
   nextVNode.el = prevVNode.el;
   if (prevVNode.type === TEXT) {
-    prevVNode.el.nodeValue = String(nextVNode.value);
+    if (prevVNode.value !== nextVNode.value) {
+      prevVNode.el.nodeValue = String(nextVNode.value);
+    }
     return nextVNode.el;
   }
   for (const [key, value] of Object.entries(nextVNode.props)) {
@@ -29,6 +31,14 @@ export const patch = (prevVNode, nextVNode, doc = globalThis.document) => {
   const ortak = Math.min(prevVNode.children.length, nextVNode.children.length);
   for (let i = 0; i < ortak; i++) {
     patch(prevVNode.children[i], nextVNode.children[i], doc);
+  }
+
+  for (let i = ortak; i < nextVNode.children.length; i++) {
+    mount(nextVNode.children[i], prevVNode.el, doc);
+  }
+
+  for (let i = ortak; i < prevVNode.children.length; i++) {
+    prevVNode.el.removeChild(prevVNode.children[i].el);
   }
 
   return nextVNode.el;
