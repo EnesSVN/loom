@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <title>loom demo</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "@loom/core": "/packages/core/index.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <script type="module">
+      import { h, mount } from "@loom/core";
+
+      mount(h("div", {}, ["merhaba"]), document.body);
+      mount(h("p", {}, ["dunya"]), document.body);
+      mount(h("span", {}, ["!"]), document.body);
+      mount(h("strong", {}, ["bold text"]), document.body);
+
+      mount(
+        h("div", {}, [
+          h("p", {}, ["iç içe metin"]),
+          h("ul", {}, [h("li", {}, ["madde 1"]), h("li", {}, ["madde 2"])]),
+        ]),
+        document.body,
+      );
+    </script>
+  </body>
+</html>
