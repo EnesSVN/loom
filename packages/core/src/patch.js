@@ -26,6 +26,10 @@ export const patch = (prevVNode, nextVNode, doc = globalThis.document) => {
       prevVNode.el.removeAttribute(key);
     }
   }
+  const ortak = Math.min(prevVNode.children.length, nextVNode.children.length);
+  for (let i = 0; i < ortak; i++) {
+    patch(prevVNode.children[i], nextVNode.children[i], doc);
+  }
 
   return nextVNode.el;
 };

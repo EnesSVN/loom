@@ -80,3 +80,20 @@ test("patch, silinen attribute'u DOM'dan kaldirir", () => {
 
   assert.equal(domNode.attributes.id, undefined);
 });
+
+test("patch, cocuklari ayni pozisyonda karsilastirir", () => {
+  const doc = createFakeDocument();
+  const container = createFakeNode();
+
+  const eski = h("div", {}, ["a"]);
+  mount(eski, container, doc);
+  const divDom = container.childNodes[0];
+  const textDom = divDom.childNodes[0];
+
+  const yeni = h("div", {}, ["b"]);
+  patch(eski, yeni, doc);
+
+  assert.equal(textDom.nodeValue, "b");
+  assert.equal(divDom.childNodes.length, 1);
+  assert.equal(divDom.childNodes[0], textDom);
+});
