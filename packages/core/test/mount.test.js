@@ -1,48 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { mount, createText, h, FRAGMENT } from "@loom/core";
-
-function createFakeNode(tag) {
-  return {
-    tagName: tag,
-    childNodes: [],
-    attributes: {},
-    style: {},
-    listeners: {},
-    appendChild(node) {
-      if (node.nodeType === "fragment") {
-        this.childNodes.push(...node.childNodes);
-        node.childNodes = [];
-        return node;
-      }
-      this.childNodes.push(node);
-      return node;
-    },
-    setAttribute(name, value) {
-      this.attributes[name] = value;
-    },
-    addEventListener(type, handler) {
-      this.listeners[type] ??= [];
-      this.listeners[type].push(handler);
-    },
-  };
-}
-
-function createFakeDocument() {
-  return {
-    createTextNode(value) {
-      return { nodeType: "text", value };
-    },
-    createElement(tag) {
-      return createFakeNode(tag);
-    },
-    createDocumentFragment() {
-      const frag = createFakeNode();
-      frag.nodeType = "fragment";
-      return frag;
-    },
-  };
-}
+import { createFakeNode, createFakeDocument } from "../test-utils/fake-dom.js";
 
 test("mount, metin dugumunu container'a ekler", () => {
   const doc = createFakeDocument();
@@ -51,7 +10,7 @@ test("mount, metin dugumunu container'a ekler", () => {
   mount(createText("merhaba"), container, doc);
 
   assert.equal(container.childNodes.length, 1);
-  assert.equal(container.childNodes[0].value, "merhaba");
+  assert.equal(container.childNodes[0].nodeValue, "merhaba");
 });
 
 test("mount, element'i ve icindeki metni ekler", () => {
@@ -62,7 +21,7 @@ test("mount, element'i ve icindeki metni ekler", () => {
 
   const div = container.childNodes[0];
   assert.equal(div.tagName, "div");
-  assert.equal(div.childNodes[0].value, "merhaba");
+  assert.equal(div.childNodes[0].nodeValue, "merhaba");
 });
 
 test("mount, siradan prop'u attribute olarak yazar", () => {
@@ -123,6 +82,16 @@ test("mount, fragment'in cocuklarini container'a tasir", () => {
   mount(h(FRAGMENT, {}, ["bir", "iki"]), container, doc);
 
   assert.equal(container.childNodes.length, 2);
-  assert.equal(container.childNodes[0].value, "bir");
-  assert.equal(container.childNodes[1].value, "iki");
+  assert.equal(container.childNodes[0].nodeValue, "bir");
+  assert.equal(container.childNodes[1].nodeValue, "iki");
+});
+
+test("mount, uretilen DOM node'unu vnode.el'e yazar", () => {
+  const doc = createFakeDocument();
+  const container = createFakeNode();
+
+  const vnode = h("div", {});
+  mount(vnode, container, doc);
+
+  assert.equal(vnode.el, container.childNodes[0]);
 });

@@ -2,21 +2,25 @@ import { TEXT, FRAGMENT } from "./vnode.js";
 
 const PROPS = ["checked", "value", "selected", "disabled"];
 
-export const mount = (vnode, container, doc = globalThis.document) => {
+// VNode'dan DOM node uretir. Hicbir yere eklemez, uretileni dondurur.
+export const createDom = (vnode, doc = globalThis.document) => {
   if (vnode.type === TEXT) {
     const textNode = doc.createTextNode(vnode.value);
-    container.appendChild(textNode);
+    vnode.el = textNode;
     return textNode;
   }
+
   if (vnode.type === FRAGMENT) {
     const frag = doc.createDocumentFragment();
     for (const child of vnode.children) {
-      mount(child, frag, doc);
+      frag.appendChild(createDom(child, doc));
     }
-    container.appendChild(frag);
     return frag;
   }
+
   const el = doc.createElement(vnode.type);
+  vnode.el = el;
+
   for (const [key, value] of Object.entries(vnode.props)) {
     switch (true) {
       case key.startsWith("on") && typeof value === "function": {
@@ -39,9 +43,14 @@ export const mount = (vnode, container, doc = globalThis.document) => {
       }
     }
   }
+
   for (const child of vnode.children) {
-    mount(child, el, doc);
+    el.appendChild(createDom(child, doc));
   }
-  container.appendChild(el);
+
   return el;
+};
+
+export const mount = (vnode, container, doc = globalThis.document) => {
+  return container.appendChild(createDom(vnode, doc));
 };
