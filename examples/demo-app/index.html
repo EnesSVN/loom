@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <title>loom demo — Faz 1</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "@loom/core": "/packages/core/index.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <script type="module">
+      import { h, mount, FRAGMENT } from "@loom/core";
+
+      const gorevler = [
+        "VNode veri yapisi",
+        "h() ve children normalizasyonu",
+        "mount() ile DOM uretimi",
+        "props ayrimi: attribute / property / event",
+        "fragment ve ic ice children",
+      ];
+
+      let sayac = 0;
+
+      const app = h(
+        "div",
+        {
+          class: "app",
+          style: {
+            fontFamily: "system-ui, sans-serif",
+            maxWidth: "560px",
+            margin: "40px auto",
+            lineHeight: "1.6",
+          },
+        },
+        [
+          h("h1", { style: { fontSize: "22px", marginBottom: "4px" } }, [
+            "loom — Faz 1",
+          ]),
+
+          h("p", { style: { color: "#666" } }, ["Tamamlanan gun: ", 5, " / 7"]),
+
+          h(FRAGMENT, {}, [
+            h("h2", { style: { fontSize: "16px" } }, ["Yapilanlar"]),
+            h("ul", {}, [gorevler.map((g) => h("li", {}, [g]))]),
+          ]),
+
+          h(
+            "button",
+            {
+              id: "sayac",
+              style: { padding: "8px 14px", cursor: "pointer" },
+              onClick: (event) => {
+                sayac += 1;
+
+                event.target.textContent = `Tiklandi: ${sayac}`;
+              },
+            },
+            ["Tiklandi: 0"],
+          ),
+
+          h("p", {}, [
+            h("input", { type: "checkbox", checked: true }),
+            " checked bir property, attribute degil",
+          ]),
+
+          h("p", { style: { color: "#666", fontSize: "13px" } }, [
+            "falsy eleme: ",
+            null,
+            false,
+            undefined,
+            "bu satirda sadece bu metin var",
+          ]),
+        ],
+      );
+
+      mount(app, document.body);
+    </script>
+  </body>
+</html>
