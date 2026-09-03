@@ -8,15 +8,15 @@ import {
   FRAGMENT,
 } from "@loom/core";
 
-test("createText returns a text node with correct type, value, and children", () => {
-  const node = createText("merhaba");
+test("createText returns a text node with type and value", () => {
+  const node = createText("hello");
 
   assert.equal(node.type, TEXT);
-  assert.equal(node.value, "merhaba");
+  assert.equal(node.value, "hello");
   assert.equal(node.children, undefined);
 });
 
-test("createElement returns an element node with correct type, props, and children", () => {
+test("createElement returns an element node with type, props and children", () => {
   const node = createElement("div", { id: "a" }, []);
 
   assert.equal(node.type, "div");
@@ -24,7 +24,7 @@ test("createElement returns an element node with correct type, props, and childr
   assert.ok(Array.isArray(node.children));
 });
 
-test("createElement with no props and no children returns an element node with correct type, props, and children", () => {
+test("createElement defaults props to {} and children to []", () => {
   const node = createElement("div");
 
   assert.equal(node.type, "div");
@@ -32,7 +32,7 @@ test("createElement with no props and no children returns an element node with c
   assert.deepEqual(node.children, []);
 });
 
-test("createFragment returns a fragment node with correct type and children", () => {
+test("createFragment returns a fragment node with children", () => {
   const node = createFragment([]);
 
   assert.equal(node.type, FRAGMENT);

@@ -25,7 +25,6 @@ export const setProp = (el, key, value) => {
   }
 };
 
-// VNode'dan DOM node uretir. Hicbir yere eklemez, uretileni dondurur.
 export const createDom = (vnode, doc = globalThis.document) => {
   if (vnode.type === TEXT) {
     const textNode = doc.createTextNode(vnode.value);
@@ -34,11 +33,11 @@ export const createDom = (vnode, doc = globalThis.document) => {
   }
 
   if (vnode.type === FRAGMENT) {
-    const frag = doc.createDocumentFragment();
+    const fragment = doc.createDocumentFragment();
     for (const child of vnode.children) {
-      frag.appendChild(createDom(child, doc));
+      fragment.appendChild(createDom(child, doc));
     }
-    return frag;
+    return fragment;
   }
 
   const el = doc.createElement(vnode.type);

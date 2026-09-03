@@ -8,11 +8,12 @@ export function createText(value) {
   };
 }
 
-export function createElement(type, props = {}, children = []) {
+export function createElement(type, props = {}, children = [], key) {
   return {
     type,
     props,
     children,
+    key,
   };
 }
 
