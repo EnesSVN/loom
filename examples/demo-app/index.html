@@ -13,70 +13,101 @@
   </head>
   <body>
     <script type="module">
-      import { h, mount, FRAGMENT } from "@loom/core";
+      import { h, mount, patch, FRAGMENT } from "@loom/core";
 
-      const tasks = [
-        "VNode data structure",
-        "h() and children normalization",
-        "mount() creates real DOM",
-        "props: attribute / property / event",
-        "fragments and nested children",
-      ];
-
+      let items = ["alpha", "beta", "gamma", "delta", "epsilon"];
       let clicks = 0;
+      let tree = null;
 
-      const app = h(
-        "div",
-        {
-          class: "app",
-          style: {
-            fontFamily: "system-ui, sans-serif",
-            maxWidth: "560px",
-            margin: "40px auto",
-            lineHeight: "1.6",
-          },
-        },
-        [
-          h("h1", { style: { fontSize: "22px", marginBottom: "4px" } }, [
-            "loom — phase 1",
-          ]),
+      const update = () => {
+        const next = view();
+        patch(tree, next, document);
+        tree = next;
+      };
 
-          h("p", { style: { color: "#666" } }, ["Days completed: ", 5, " / 7"]),
+      const increment = () => {
+        clicks += 1;
+        update();
+      };
 
-          h(FRAGMENT, {}, [
-            h("h2", { style: { fontSize: "16px" } }, ["Done"]),
-            h("ul", {}, [tasks.map((task) => h("li", {}, [task]))]),
-          ]),
+      const shuffle = () => {
+        items = [...items].sort(() => Math.random() - 0.5);
+        update();
+      };
 
-          h(
-            "button",
-            {
-              id: "counter",
-              style: { padding: "8px 14px", cursor: "pointer" },
-              onClick: (event) => {
-                clicks += 1;
-                event.target.textContent = `Clicked: ${clicks}`;
-              },
+      const buttonStyle = {
+        padding: "8px 14px",
+        marginRight: "8px",
+        cursor: "pointer",
+      };
+
+      const view = () =>
+        h(
+          "div",
+          {
+            class: "app",
+            style: {
+              fontFamily: "system-ui, sans-serif",
+              maxWidth: "560px",
+              margin: "40px auto",
+              lineHeight: "1.6",
             },
-            ["Clicked: 0"],
-          ),
+          },
+          [
+            h("h1", { style: { fontSize: "22px", marginBottom: "4px" } }, [
+              "loom",
+            ]),
 
-          h("p", {}, [
-            h("input", { type: "checkbox", checked: true }),
-            " checked is a property, not an attribute",
-          ]),
+            h(FRAGMENT, {}, [
+              h("p", { style: { color: "#666" } }, [
+                "Everything below is produced by h(), mount() and patch().",
+              ]),
+            ]),
 
-          h("p", { style: { color: "#666", fontSize: "13px" } }, [
-            "falsy filtering: ",
-            null,
-            false,
-            undefined,
-            "only this text is rendered",
-          ]),
-        ],
-      );
+            h("button", { onClick: increment, style: buttonStyle }, [
+              `Clicked: ${clicks}`,
+            ]),
+            h("button", { onClick: shuffle, style: buttonStyle }, ["Shuffle"]),
 
-      mount(app, document.body);
+            h(
+              "p",
+              { style: { color: "#666", fontSize: "13px", marginTop: "24px" } },
+              [
+                "Type something into a box, then press Shuffle. The text ",
+                "travels with its item: keyed diff moves the existing DOM ",
+                "nodes instead of recreating them.",
+              ],
+            ),
+
+            h(
+              "ul",
+              { style: { paddingLeft: "18px" } },
+              [
+                items.map((item) =>
+                  h("li", { key: item, style: { marginBottom: "6px" } }, [
+                    h(
+                      "span",
+                      { style: { display: "inline-block", width: "80px" } },
+                      [item],
+                    ),
+                    h("input", { placeholder: "type here" }),
+                  ]),
+                ),
+              ],
+            ),
+
+            h("p", { style: { color: "#666", fontSize: "13px" } }, [
+              "falsy filtering: ",
+              null,
+              false,
+              undefined,
+              "only this text is rendered",
+            ]),
+          ],
+        );
+
+      tree = view();
+      mount(tree, document.body);
     </script>
   </body>
 </html>
