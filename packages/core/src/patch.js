@@ -1,12 +1,13 @@
 import { TEXT } from "./vnode.js";
 import { createDom, setProp, mount } from "./mount.js";
+import { lis } from "./lis.js";
 
 export const patch = (prevVNode, nextVNode, doc = globalThis.document) => {
   if (prevVNode.type !== nextVNode.type) {
     const parent = prevVNode.el.parentNode;
     const newEl = createDom(nextVNode, doc);
     parent.replaceChild(newEl, prevVNode.el);
-    return nextVNode.el;
+    return newEl;
   }
 
   nextVNode.el = prevVNode.el;
@@ -15,7 +16,7 @@ export const patch = (prevVNode, nextVNode, doc = globalThis.document) => {
     if (prevVNode.value !== nextVNode.value) {
       prevVNode.el.nodeValue = String(nextVNode.value);
     }
-    return nextVNode.el;
+    return prevVNode.el;
   }
 
   for (const [key, value] of Object.entries(nextVNode.props)) {
@@ -57,23 +58,38 @@ export const patchChildren = (
   }
 
   const prevByKey = new Map();
-  for (const prevChild of prevChildren) {
-    prevByKey.set(prevChild.key, prevChild);
+  for (let i = 0; i < prevChildren.length; i++) {
+    const prevChild = prevChildren[i];
+    if (prevChild.key !== undefined) {
+      prevByKey.set(prevChild.key, i);
+    }
   }
 
+  const oldIndexes = [];
+  const newIndexes = [];
   for (let i = 0; i < nextChildren.length; i++) {
     const nextChild = nextChildren[i];
-    const prevChild = prevByKey.get(nextChild.key);
+    const prevIndex = prevByKey.get(nextChild.key);
 
-    let domNode;
-    if (prevChild) {
-      patch(prevChild, nextChild, doc);
-      domNode = nextChild.el;
+    if (prevIndex !== undefined) {
+      oldIndexes.push(prevIndex);
+      newIndexes.push(i);
+      patch(prevChildren[prevIndex], nextChild, doc);
     } else {
-      domNode = createDom(nextChild, doc);
+      createDom(nextChild, doc);
     }
+  }
 
-    parentEl.insertBefore(domNode, parentEl.childNodes[i] ?? null);
+  const lisPositions = lis(oldIndexes);
+  const keep = new Set();
+  for (const position of lisPositions) {
+    keep.add(newIndexes[position]);
+  }
+
+  for (let i = nextChildren.length - 1; i >= 0; i--) {
+    if (keep.has(i)) continue;
+    const anchor = nextChildren[i + 1]?.el ?? null;
+    parentEl.insertBefore(nextChildren[i].el, anchor);
   }
 
   const nextKeys = new Set(nextChildren.map((child) => child.key));
