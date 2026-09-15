@@ -157,3 +157,28 @@ test("patch removes keyed children that are gone from the new tree", () => {
   assert.equal(ulDom.childNodes.length, 1);
   assert.equal(ulDom.childNodes[0].childNodes[0].nodeValue, "b");
 });
+
+test("patch adds new keyed children to a keyed list", () => {
+  const doc = createFakeDocument();
+  const container = createFakeNode();
+
+  const prev = h("ul", {}, [
+    h("li", { key: "a" }, ["a"]),
+    h("li", { key: "b" }, ["b"]),
+  ]);
+  mount(prev, container, doc);
+  const ulDom = container.childNodes[0];
+  const before = [...ulDom.childNodes];
+
+  const next = h("ul", {}, [
+    h("li", { key: "c" }, ["c"]),
+    h("li", { key: "a" }, ["a"]),
+    h("li", { key: "b" }, ["b"]),
+  ]);
+  patch(prev, next, doc);
+
+  assert.equal(ulDom.childNodes.length, 3);
+  assert.equal(ulDom.childNodes[0].childNodes[0].nodeValue, "c");
+  assert.equal(ulDom.childNodes[1], before[0]);
+  assert.equal(ulDom.childNodes[2], before[1]);
+});
